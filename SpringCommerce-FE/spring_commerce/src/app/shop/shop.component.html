@@ -1,0 +1,145 @@
+<!-- Fruits Shop Start-->
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <h1 class="mb-4">Spring Commerce</h1>
+        <div class="row g-4">
+            <div class="col-lg-12">
+                <div class="row g-4">
+                    <div class="col-xl-3">
+                        <div class="input-group w-100 mx-auto d-flex">
+                            <input #nameSearchInput type="search" class="form-control p-3" placeholder="Tìm kiếm theo tên" aria-describedby="search-icon-1">
+                            <span (click)="filterProductListByName()" id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <div class="col-6"></div>
+                    <div class="col-xl-3">
+                        <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
+                            <label for="filterOptions">Lọc theo:</label>
+                            <select id="filterOptions" name="filterlist" class="border-0 form-select-sm bg-light me-3" (change)="applySorting($event)" >
+                                <option value="" disabled selected>Chọn kiểu lọc</option> <!-- Thêm lựa chọn mặc định -->
+                                <option value="priceAsc">Giá tăng dần</option>
+                                <option value="priceDesc">Giá giảm dần</option>
+                                <option value="nameAsc">Thứ tự chữ cái tăng dần</option>
+                                <option value="nameDesc">Thứ tự chữ cái giảm dần</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="row g-4">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <h4>Loại sản phẩm</h4>
+                                    <ul *ngIf="categoryList && productList" class="list-unstyled fruite-categorie">
+                                        <li *ngFor="let category of categoryList">
+                                            <div 
+                                                class="d-flex justify-content-between fruite-name"
+                                                [ngClass]="{'active': checkCateId(category.id) }" 
+                                                (click)="selectCategory(category.id)">
+                                            
+                                                <a class="c-pointer"><i class="fas fa-apple-alt me-2"></i>{{category.name}}</a>
+                                                <span *ngIf="showQuantity">({{getQuantityOfProductByCategoryId(category.id)}})</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <h4>Thương hiệu</h4>
+                                    <ul *ngIf="brandList" class="list-unstyled fruite-categorie">
+                                        <li *ngFor="let brand of brandList">
+                                            <div 
+                                                class="d-flex justify-content-between fruite-name"
+                                                [ngClass]="{'active': checkBrandId(brand.id) }" 
+                                                (click)="selectBrand(brand.id)">
+                                                <a class="c-pointer"><i class="fas fa-apple-alt me-2"></i>{{brand.name}}</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <h4>Thương hiệu</h4>
+                                    <ul *ngIf="colorList" class="list-unstyled fruite-categorie">
+                                        <li *ngFor="let color of colorList">
+                                            <div 
+                                                class="d-flex justify-content-between fruite-name"
+                                                [ngClass]="{'active': checkColorId(color.id) }" 
+                                                (click)="selectColor(color.id)">
+                                                <a class="c-pointer"><i class="fas fa-apple-alt me-2"></i>{{color.name}}</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                  <h4 class="mb-2">Giá</h4>
+                                  
+                                  <!-- Giá bắt đầu -->
+                                  <div class="mb-2">
+                                    <label for="startPrice" class="form-label">Giá bắt đầu</label>
+                                    <input type="number" class="form-control" #startPriceInput id="startPrice" name="startPrice" min="0" max="500000000" placeholder="Giá bắt đầu" value="0">
+                                  </div>
+                                  
+                                  <!-- Giá kết thúc -->
+                                  <div class="mb-2">
+                                    <label for="endPrice" class="form-label">Giá kết thúc</label>
+                                    <input type="number" class="form-control" #endPriceInput id="endPrice" name="endPrice" min="0" max="500000000" placeholder="Giá kết thúc" value="500000000">
+                                  </div>
+                                </div>
+                              
+                                <div class="mb-3">
+                                  <button class="btn btn-primary" (click)="searchPrices()">Áp dụng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div *ngIf="filterProductList" class="row g-4 justify-content-center">
+                            <div *ngFor="let product of filterProductList" class="col-md-6 col-lg-6 col-xl-4">
+                                <div  (click)="goToDetailProduct(product.id)" class="rounded position-relative fruite-item c-pointer">
+                                    <div class="fruite-img" *ngIf="productDetailsList">
+                                        <img src="{{getProductDetailsByProductId(product.id)?.image_url}}" class="img-fluid w-100 rounded-top img-custome" alt="">
+                                    </div>
+                                    <div *ngIf="categoryList" class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                                        {{getCategoryByProductId(product.id)?.name}}
+                                    </div>
+                                    <div class="p-4 border border-secondary border-top-0 rounded-bottom box-info">
+                                        <h4>{{product.name}}</h4>
+                                        <p>{{product.description}}</p>
+                                        <div class="d-flex justify-content-between flex-lg-wrap">
+                                            <div class="product-price">
+                                                <!-- Giá cũ và phần trăm giảm giá cùng một hàng -->
+                                                <div class="d-flex align-items-center mb-2">
+                                                  <!-- Giá cũ với dấu gạch và màu xám -->
+                                                  <h5 class="text-muted text-decoration-line-through mb-0 me-2">
+                                                    {{ product.price | customePrice3dot }} VNĐ
+                                                  </h5>
+                                                  
+                                                  <!-- Phần trăm giảm giá -->
+                                                  <span class="badge bg-danger">{{ product.discount }}%</span>
+                                                </div>
+                                              
+                                                <!-- Giá thực sau khi giảm giá (ở dòng khác) -->
+                                                <h3 class="fw-bold mb-0">
+                                                  {{ getRealPrice(product.price, product.discount) | customePrice3dot }} VNĐ
+                                                </h3>
+                                              </div>
+                                            <a (click)="addToCart(product.id); $event.stopPropagation()" class="btn border border-secondary rounded-pill px-3 text-primary mt-3"><i class="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ hàng</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fruits Shop End-->

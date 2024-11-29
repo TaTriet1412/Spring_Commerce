@@ -1,0 +1,80 @@
+<!-- Cart Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Sản phẩm</th>
+                    <th scope="col">Tên</th>
+                    <th scope="col">Giá</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Tổng</th>
+                    <th scope="col">Xóa</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="productList && productDetailsList">
+                    <tr *ngFor="let cartItem of currCartItemList; let i = index">
+                      <th scope="row">
+                        <div class="d-flex align-items-center">
+                          <img [src]="getProductDetailByProductId(cartItem.productId)?.image_url" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="">
+                        </div>
+                      </th>
+                      <td>
+                        <p class="mb-0 mt-4">{{ getProductById(cartItem.productId)?.name }}</p>
+                      </td>
+                      <td>
+                        <p class="mb-0 mt-4">
+                          {{
+                            getRealPrice(getProductById(cartItem.productId)?.price!, getProductById(cartItem.productId)?.discount!) | customePrice3dot
+                          }} VNĐ
+                        </p>
+                      </td>
+                      <td>
+                        <div class="input-group quantity mt-4" style="width: 100px;">
+                          <div class="input-group-btn">
+                            <button class="btn btn-sm btn-minus rounded-circle bg-light border" (click)="decreaseQuantity(i,getProductById(cartItem.productId)!.id)">
+                              <i class="fa fa-minus"></i>
+                            </button>
+                          </div>
+                          <input type="text" class="form-control form-control-sm text-center border-0" [value]="cartItem.quantity" (input)="updateQuantity($event, i)" readonly>
+                          <div class="input-group-btn">
+                            <button class="btn btn-sm btn-plus rounded-circle bg-light border" (click)="increaseQuantity(i,getProductById(cartItem.productId)!.id)">
+                              <i class="fa fa-plus"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <p class="mb-0 mt-4">{{ calculateTotal(cartItem) | customePrice3dot}} VNĐ</p>
+                      </td>
+                      <td>
+                        <button class="btn btn-md rounded-circle bg-light border mt-4" (click)="removeItem(i,cartItem.id)">
+                          <i class="fa fa-times text-danger"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                  
+            </table>
+        </div>
+
+        <div class="row g-4 justify-content-end">
+            <div class="col-8"></div>
+            <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
+                <div class="bg-light rounded">
+                    <div class="p-4">
+                        <h1 class="display-6 mb-4">Giỏ hàng <span class="fw-normal"></span></h1>
+                        <!-- Hiển thị tổng giá trị giỏ hàng -->
+                        <div *ngIf="currCartItemList && productList" class="d-flex justify-content-between mb-4" >
+                            <h5 class="mb-0 me-4">Tổng giá sản phẩm:</h5>
+                            <p class="mb-0">{{ calculateCartTotal() | customePrice3dot }} VNĐ</p>
+                        </div>
+                    </div>
+                    <button (click)="processOrder()" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Đặt hàng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Cart Page End -->
